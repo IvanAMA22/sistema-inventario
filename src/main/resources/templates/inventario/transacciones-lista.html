@@ -1,0 +1,69 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::#main-content}, ~{}, ~{})}">
+<head>
+    <title th:text="#{transacciones.titulo}">Historial de Transacciones</title>
+</head>
+<body>
+<div id="main-content">
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 fw-bold">
+            <i class="bi bi-arrow-left-right me-2 text-success"></i>
+            <span th:text="#{transacciones.titulo}">Historial de Transacciones</span>
+        </h1>
+        <a th:href="@{/inventario/transaccion/nueva}" class="btn btn-success">
+            <i class="bi bi-plus-lg"></i>
+            <span th:text="#{btn.nuevo.movimiento}">Nuevo Movimiento</span>
+        </a>
+    </div>
+
+    <!-- TABLA DE TRANSACCIONES -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th th:text="#{tabla.id}">#</th>
+                            <th th:text="#{tabla.producto}">Producto</th>
+                            <th th:text="#{tabla.tipo.movimiento}">Tipo</th>
+                            <th th:text="#{tabla.cantidad}">Cantidad</th>
+                            <th th:text="#{tabla.fecha}">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Mensaje si no hay transacciones -->
+                        <tr th:if="${#lists.isEmpty(transacciones)}">
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                <span th:text="#{tabla.sin.transacciones}">No hay transacciones registradas.</span>
+                            </td>
+                        </tr>
+                        <!-- Filas de transacciones -->
+                        <tr th:each="t : ${transacciones}">
+                            <td th:text="${t.idTransaccion}" class="fw-semibold text-secondary">1</td>
+                            <td th:text="${t.nombreProducto}" class="fw-medium">Producto</td>
+                            <td>
+                                <!--
+                                    Aplica clase CSS dinámica según el tipo de movimiento:
+                                    badge-entrada (verde) o badge-salida (rojo)
+                                -->
+                                <span class="badge"
+                                      th:classappend="${t.tipoMovimiento.name() == 'ENTRADA' ? 'badge-entrada' : 'badge-salida'}"
+                                      th:text="#{${'tipo.' + t.tipoMovimiento}}">
+                                    TIPO
+                                </span>
+                            </td>
+                            <td th:text="${t.cantidad}" class="fw-semibold">0</td>
+                            <td th:text="${#temporals.format(t.fechaMovimiento, 'dd/MM/yyyy HH:mm')}" class="text-secondary">
+                                01/01/2024 10:00
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

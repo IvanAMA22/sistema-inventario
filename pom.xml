@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.0</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.universidad</groupId>
+    <artifactId>sistema-inventario</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>Sistema de Inventario</name>
+    <description>Sistema de Inventario MVC con Spring Boot, JPA y Thymeleaf</description>
+
+    <properties>
+        <java.version>17</java.version>
+        <!-- Clase principal requerida por NetBeans (exec-maven-plugin) -->
+        <start-class>com.universidad.inventario.SistemaInventarioApplication</start-class>
+        <!-- Cobertura mínima requerida por la rúbrica (80%) -->
+        <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
+        <!-- Integración SonarQube con JaCoCo -->
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Web (MVC) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA / Hibernate -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Jakarta Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- MySQL Driver — versión 8.0.33 compatible con MySQL Server 8.0.x -->
+        <!-- NOTA: mysql-connector-j 8.3.0 tiene un bug con MySQL 8.0.x (BadAuthenticationPlugin) -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- MariaDB Driver — compatible con MySQL 8.0.x (maneja authentication_policy correctamente) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+        </dependency>
+
+        <!-- H2 Database (tests unitarios sin MySQL) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Lombok (reduce boilerplate) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot Test (JUnit 5 + Mockito) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- =========================================================== -->
+            <!--  JACOCO — Cobertura de código (mínimo 80% requerido)        -->
+            <!-- =========================================================== -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <!-- Desactivado en desarrollo. Para cobertura: mvn verify -Djacoco.skip=false -->
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+                <executions>
+                    <!-- Instrumenta los tests para recopilar métricas -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals><goal>prepare-agent</goal></goals>
+                    </execution>
+                    <!-- Genera el reporte HTML + XML después de los tests -->
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals><goal>report</goal></goals>
+                    </execution>
+                    <!-- Verifica que la cobertura alcance el mínimo (80%) -->
+                    <execution>
+                        <id>check-coverage</id>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>${jacoco.minimum.coverage}</minimum>
+                                        </limit>
+                                    </limits>
+                                    <!-- Excluir clases de configuración e inicialización -->
+                                    <excludes>
+                                        <exclude>com/universidad/inventario/SistemaInventarioApplication.class</exclude>
+                                        <exclude>com/universidad/inventario/DataInitializer.class</exclude>
+                                        <exclude>com/universidad/inventario/config/**</exclude>
+                                        <exclude>com/universidad/inventario/entity/**</exclude>
+                                        <exclude>com/universidad/inventario/dto/**</exclude>
+                                        <exclude>com/universidad/inventario/exception/**</exclude>
+                                    </excludes>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

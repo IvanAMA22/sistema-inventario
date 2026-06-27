@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-shared-configuration>
+    <!--
+        Configuración para Apache NetBeans.
+        Con este archivo, el botón ▶ Run (F6) ejecuta Spring Boot automáticamente.
+    -->
+    <properties xmlns="http://www.netbeans.org/ns/maven-properties-data/1">
+        <netbeans.hint.jdkPlatform>JDK_21</netbeans.hint.jdkPlatform>
+    </properties>
+    <action-goals xmlns="http://www.netbeans.org/ns/maven-customizer/1">
+        <!-- Botón ▶ Run (F6) -->
+        <action>
+            <actionName>run</actionName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <jacoco.skip>true</jacoco.skip>
+            </properties>
+        </action>
+        <!-- Botón 🐞 Debug -->
+        <action>
+            <actionName>debug</actionName>
+            <goals>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <jacoco.skip>true</jacoco.skip>
+                <spring-boot.run.jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</spring-boot.run.jvmArguments>
+            </properties>
+        </action>
+    </action-goals>
+</project-shared-configuration>

@@ -1,0 +1,119 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::#main-content}, ~{}, ~{})}">
+<head>
+    <title th:text="#{form.producto.titulo}">Formulario Producto</title>
+</head>
+<body>
+<div id="main-content">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-box-seam me-2 text-indigo"></i>
+                        <!-- Título condicional: Nuevo o Editar -->
+                        <span th:if="${productoDTO.idProducto == null}" th:text="#{form.producto.nuevo}">Nuevo Producto</span>
+                        <span th:unless="${productoDTO.idProducto == null}" th:text="#{form.producto.editar}">Editar Producto</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+
+                    <!-- Error de SKU duplicado -->
+                    <div th:if="${errorSku}" class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-2"></i>
+                        <span th:text="${errorSku}">Error SKU</span>
+                    </div>
+
+                    <form th:action="@{/inventario/producto/guardar}"
+                          th:object="${productoDTO}"
+                          method="post"
+                          novalidate>
+
+                        <!-- Campo oculto para ID (edición) -->
+                        <input type="hidden" th:field="*{idProducto}">
+
+                        <!-- CATEGORÍA -->
+                        <div class="mb-3">
+                            <label for="idCategoria" class="form-label fw-semibold"
+                                   th:text="#{tabla.categoria}">Categoría</label>
+                            <select id="idCategoria" th:field="*{idCategoria}"
+                                    class="form-select"
+                                    th:classappend="${#fields.hasErrors('idCategoria')} ? 'is-invalid'">
+                                <option value="" th:text="#{form.seleccione}">-- Seleccione --</option>
+                                <option th:each="cat : ${categorias}"
+                                        th:value="${cat.idCategoria}"
+                                        th:text="${cat.nombre}">Categoría</option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('idCategoria')}"
+                                 th:errors="*{idCategoria}">Error</div>
+                        </div>
+
+                        <!-- SKU -->
+                        <div class="mb-3">
+                            <label for="codigoSku" class="form-label"
+                                   th:text="#{tabla.sku}">SKU</label>
+                            <input type="text" id="codigoSku" th:field="*{codigoSku}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('codigoSku')} ? 'is-invalid'"
+                                   th:placeholder="#{form.sku.placeholder}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('codigoSku')}"
+                                 th:errors="*{codigoSku}">Error</div>
+                        </div>
+
+                        <!-- NOMBRE -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label"
+                                   th:text="#{tabla.producto}">Nombre</label>
+                            <input type="text" id="nombre" th:field="*{nombre}"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                   th:placeholder="#{form.nombre.placeholder}">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}"
+                                 th:errors="*{nombre}">Error</div>
+                        </div>
+
+                        <!-- PRECIO -->
+                        <div class="mb-3">
+                            <label for="precioUnitario" class="form-label"
+                                   th:text="#{tabla.precio}">Precio Unitario</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-secondary text-light border-0">$</span>
+                                <input type="number" id="precioUnitario" th:field="*{precioUnitario}"
+                                       class="form-control" step="0.01" min="0.01"
+                                       th:classappend="${#fields.hasErrors('precioUnitario')} ? 'is-invalid'">
+                            </div>
+                            <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('precioUnitario')}"
+                                 th:errors="*{precioUnitario}">Error</div>
+                        </div>
+
+                        <!-- STOCK -->
+                        <div class="mb-4">
+                            <label for="stockActual" class="form-label"
+                                   th:text="#{tabla.stock}">Stock Actual</label>
+                            <input type="number" id="stockActual" th:field="*{stockActual}"
+                                   class="form-control" min="0"
+                                   th:classappend="${#fields.hasErrors('stockActual')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('stockActual')}"
+                                 th:errors="*{stockActual}">Error</div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/inventario}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i>
+                                <span th:text="#{btn.cancelar}">Cancelar</span>
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i>
+                                <span th:text="#{btn.guardar}">Guardar</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

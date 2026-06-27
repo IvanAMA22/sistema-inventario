@@ -1,0 +1,136 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::#main-content}, ~{}, ~{})}">
+<head>
+    <title th:text="#{inventario.titulo}">Inventario de Productos</title>
+</head>
+<body>
+<div id="main-content">
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 fw-bold">
+            <i class="bi bi-clipboard2-data me-2 text-indigo"></i>
+            <span th:text="#{inventario.titulo}">Inventario de Productos</span>
+        </h1>
+        <a th:href="@{/inventario/producto/nuevo}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+            <span th:text="#{btn.nuevo.producto}">Nuevo Producto</span>
+        </a>
+    </div>
+
+    <!-- TABLA DE PRODUCTOS -->
+    <div class="card mb-4 shadow-lg border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th th:text="#{tabla.id}">#</th>
+                            <th th:text="#{tabla.sku}">SKU</th>
+                            <th th:text="#{tabla.producto}">Producto</th>
+                            <th th:text="#{tabla.categoria}">Categoría</th>
+                            <th th:text="#{tabla.precio}">Precio Unit.</th>
+                            <th th:text="#{tabla.stock}">Stock</th>
+                            <th th:text="#{tabla.acciones}">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Mensaje si no hay productos -->
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+                                <span th:text="#{tabla.sin.productos}">No hay productos registrados.</span>
+                            </td>
+                        </tr>
+                        <!-- Filas de productos -->
+                        <tr th:each="p : ${productos}">
+                            <td th:text="${p.idProducto}" class="fw-semibold text-secondary">1</td>
+                            <td>
+                                <span class="badge bg-dark text-light border border-secondary" th:text="${p.codigoSku}">SKU-001</span>
+                            </td>
+                            <td th:text="${p.nombre}" class="fw-medium">Producto</td>
+                            <td>
+                                <span class="text-secondary" th:text="${p.nombreCategoria}">Categoría</span>
+                            </td>
+                            <td th:text="${'$' + #numbers.formatDecimal(p.precioUnitario, 1, 2)}" class="fw-semibold text-indigo">$0.00</td>
+                            <td>
+                                <!-- Stock en rojo si es 0 o menor a 5 -->
+                                <span th:class="${p.stockActual <= 5 ? 'text-danger fw-bold' : 'text-success fw-bold'}"
+                                      th:text="${p.stockActual}">100</span>
+                                <span th:if="${p.stockActual <= 5}" class="badge bg-danger-glow text-danger ms-2" style="font-size: 0.65rem; border: 1px solid rgba(239, 68, 68, 0.2)">
+                                    <i class="bi bi-exclamation-triangle-fill"></i> LOW
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-inline-flex gap-2">
+                                    <a th:href="@{/inventario/producto/editar/{id}(id=${p.idProducto})}"
+                                       class="btn btn-sm btn-outline-warning"
+                                       th:title="#{btn.editar}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                    <form th:action="@{/inventario/producto/eliminar/{id}(id=${p.idProducto})}"
+                                          method="post" style="display:inline;"
+                                          onsubmit="return confirm(this.dataset.confirm)"
+                                          th:attr="data-confirm=#{confirm.eliminar}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                th:title="#{btn.eliminar}">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RESUMEN RÁPIDO -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4">
+            <div class="card border-0">
+                <div class="card-body d-flex align-items-center gap-3 py-4">
+                    <div class="p-3 rounded-3 bg-primary-glow text-primary">
+                        <i class="bi bi-box-seam fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary mb-1" th:text="#{resumen.total.productos}">Total Productos</h6>
+                        <h3 class="fw-bold mb-0" th:text="${productos.size()}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0">
+                <div class="card-body d-flex align-items-center gap-3 py-4">
+                    <div class="p-3 rounded-3 bg-danger-glow text-danger">
+                        <i class="bi bi-exclamation-triangle fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary mb-1" th:text="#{resumen.stock.bajo}">Stock Bajo (≤5)</h6>
+                        <h3 class="fw-bold mb-0 text-danger"
+                            th:text="${productos.?[stockActual <= 5].size()}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0">
+                <div class="card-body d-flex align-items-center gap-3 py-4">
+                    <div class="p-3 rounded-3 bg-success-glow text-success">
+                        <i class="bi bi-arrow-down-up fs-3"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-secondary mb-1" th:text="#{resumen.movimientos}">Movimientos</h6>
+                        <a th:href="@{/inventario/transacciones}" class="btn btn-sm btn-success mt-1">
+                            <span th:text="#{nav.transacciones}">Transacciones</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

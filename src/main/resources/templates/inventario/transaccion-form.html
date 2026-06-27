@@ -1,0 +1,102 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: layout(~{::title}, ~{::#main-content}, ~{}, ~{})}">
+<head>
+    <title th:text="#{form.transaccion.titulo}">Nueva Transacción</title>
+</head>
+<body>
+<div id="main-content">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header">
+                    <h5 class="mb-0 fw-bold text-success">
+                        <i class="bi bi-arrow-left-right me-2"></i>
+                        <span th:text="#{form.transaccion.titulo}">Registrar Movimiento</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+
+                    <form th:action="@{/inventario/transaccion/registrar}"
+                          th:object="${transaccionDTO}"
+                          method="post"
+                          novalidate>
+
+                        <!-- PRODUCTO -->
+                        <div class="mb-3">
+                            <label for="idProducto" class="form-label"
+                                   th:text="#{tabla.producto}">Producto</label>
+                            <select id="idProducto" th:field="*{idProducto}"
+                                    class="form-select"
+                                    th:classappend="${#fields.hasErrors('idProducto')} ? 'is-invalid'">
+                                <option value="" th:text="#{form.seleccione}">-- Seleccione --</option>
+                                <option th:each="p : ${productos}"
+                                        th:value="${p.idProducto}"
+                                        th:text="${p.nombre + ' (Stock: ' + p.stockActual + ')'}">
+                                    Producto
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('idProducto')}"
+                                 th:errors="*{idProducto}">Error</div>
+                        </div>
+
+                        <!-- TIPO DE MOVIMIENTO -->
+                        <div class="mb-4">
+                            <label class="form-label"
+                                   th:text="#{form.tipo.movimiento}">Tipo de Movimiento</label>
+                            <div class="d-flex gap-4 p-3 rounded-3 bg-secondary">
+                                <div th:each="tipo : ${tiposMovimiento}" class="form-check form-check-inline mb-0">
+                                    <input class="form-check-input" type="radio"
+                                           th:field="*{tipoMovimiento}"
+                                           th:value="${tipo}"
+                                           th:id="'tipo_' + ${tipo}">
+                                    <label class="form-check-label fw-medium text-light"
+                                           th:for="'tipo_' + ${tipo}"
+                                           th:text="#{${'tipo.' + tipo}}">TIPO</label>
+                                </div>
+                            </div>
+                            <div class="text-danger small mt-2"
+                                 th:if="${#fields.hasErrors('tipoMovimiento')}"
+                                 th:errors="*{tipoMovimiento}">Error</div>
+                        </div>
+
+                        <!-- CANTIDAD -->
+                        <div class="mb-4">
+                            <label for="cantidad" class="form-label"
+                                   th:text="#{form.cantidad}">Cantidad</label>
+                            <input type="number" id="cantidad" th:field="*{cantidad}"
+                                   class="form-control" min="1"
+                                   th:classappend="${#fields.hasErrors('cantidad')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('cantidad')}"
+                                 th:errors="*{cantidad}">Error</div>
+                        </div>
+
+                        <!-- INFO: la fecha se asigna automáticamente -->
+                        <div class="alert alert-info py-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-info-circle-fill"></i>
+                                <small th:text="#{form.fecha.automatica}">
+                                    La fecha del movimiento se asigna automáticamente.
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- BOTONES -->
+                        <div class="d-flex gap-2 justify-content-end mt-4">
+                            <a th:href="@{/inventario}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i>
+                                <span th:text="#{btn.cancelar}">Cancelar</span>
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-lg"></i>
+                                <span th:text="#{btn.registrar}">Registrar</span>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
