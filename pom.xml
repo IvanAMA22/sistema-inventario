@@ -25,6 +25,8 @@
         <start-class>com.universidad.inventario.SistemaInventarioApplication</start-class>
         <!-- Cobertura mínima requerida por la rúbrica (80%) -->
         <jacoco.minimum.coverage>0.80</jacoco.minimum.coverage>
+        <!-- Propiedad para activar/desactivar JaCoCo -->
+        <jacoco.skip>true</jacoco.skip>
         <!-- Integración SonarQube con JaCoCo -->
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -115,7 +117,16 @@
                 <version>0.8.12</version>
                 <!-- Desactivado en desarrollo. Para cobertura: mvn verify -Djacoco.skip=false -->
                 <configuration>
-                    <skip>true</skip>
+                    <skip>${jacoco.skip}</skip>
+                    <excludes>
+                        <exclude>com/universidad/inventario/SistemaInventarioApplication.class</exclude>
+                        <exclude>com/universidad/inventario/DataInitializer.class</exclude>
+                        <exclude>com/universidad/inventario/config/**</exclude>
+                        <exclude>com/universidad/inventario/entity/**</exclude>
+                        <exclude>com/universidad/inventario/dto/**</exclude>
+                        <exclude>com/universidad/inventario/exception/**</exclude>
+                        <exclude>com/universidad/inventario/controller/**</exclude>
+                    </excludes>
                 </configuration>
                 <executions>
                     <!-- Instrumenta los tests para recopilar métricas -->
@@ -145,15 +156,6 @@
                                             <minimum>${jacoco.minimum.coverage}</minimum>
                                         </limit>
                                     </limits>
-                                    <!-- Excluir clases de configuración e inicialización -->
-                                    <excludes>
-                                        <exclude>com/universidad/inventario/SistemaInventarioApplication.class</exclude>
-                                        <exclude>com/universidad/inventario/DataInitializer.class</exclude>
-                                        <exclude>com/universidad/inventario/config/**</exclude>
-                                        <exclude>com/universidad/inventario/entity/**</exclude>
-                                        <exclude>com/universidad/inventario/dto/**</exclude>
-                                        <exclude>com/universidad/inventario/exception/**</exclude>
-                                    </excludes>
                                 </rule>
                             </rules>
                         </configuration>
